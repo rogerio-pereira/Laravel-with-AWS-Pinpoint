@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Events\PurchaseEvent;
 use App\Models\Product;
 use App\Models\Purchase;
 use Illuminate\Support\Facades\Auth;
@@ -21,11 +22,13 @@ class Dashboard extends Component
 
     public function buy(int $productId)
     {
-        Auth::user()
-            ->purchases()
-            ->create([
-                'product_id' => $productId
-            ]);
+        $purchase = Auth::user()
+                        ->purchases()
+                        ->create([
+                            'product_id' => $productId
+                        ]);
+                        
+        PurchaseEvent::dispatch($purchase);
 
         $previousRoute = request()->header('Referer');
         return redirect($previousRoute);
