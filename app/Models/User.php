@@ -32,6 +32,8 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $with = ['purchases.product'];
+
     /**
      * Get the attributes that should be cast.
      *
@@ -43,5 +45,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
     }
 }
