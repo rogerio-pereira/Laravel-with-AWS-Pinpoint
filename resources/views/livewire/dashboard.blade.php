@@ -1,4 +1,4 @@
-<x-app-layout>
+<layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Dashboard') }}
@@ -28,7 +28,7 @@
                                     <td>{{ $product->name }}</td>
                                     <td>{{ $product->price }}</td>
                                     <td>
-                                        <button class='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
+                                        <button wire:click='buy({{$product->id}})' class='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
                                             Buy
                                         </button>
                                     </td>
@@ -70,4 +70,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+<layout>
