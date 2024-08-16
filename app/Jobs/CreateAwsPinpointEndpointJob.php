@@ -11,7 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class CreateAwsPinpointEndpoint implements ShouldQueue
+class CreateAwsPinpointEndpointJob implements ShouldQueue
 {
     use Queueable;
 

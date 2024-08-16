@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Jobs\CreateAwsPinpointEndpoint;
+use App\Jobs\CreateAwsPinpointEndpointJob;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -25,6 +25,6 @@ class NewUserListener
     {
         $user = $event->user;
 
-        CreateAwsPinpointEndpoint::dispatch($user);
+        CreateAwsPinpointEndpointJob::dispatch($user);
     }
 }
