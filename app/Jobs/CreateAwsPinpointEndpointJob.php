@@ -19,8 +19,7 @@ class CreateAwsPinpointEndpointJob implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        protected User $user,
-        protected PinpointService $pinpointService
+        protected User $user
     ) { }
 
     /**
@@ -28,7 +27,9 @@ class CreateAwsPinpointEndpointJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $this->pinpointService
+        $service = new PinpointService;
+
+        $service
             ->createEndpoint(
                 $this->user->id, 
                 $this->user->email, 

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Aws\Pinpoint\PinpointClient;
+use Illuminate\Support\Facades\Log;
 
 class PinpointService
 {
@@ -38,21 +39,32 @@ class PinpointService
     {
         $appId = config('services.pinpoint.app_id');
 
-        return $this->pinpoint->updateEndpoint([
-                        'ApplicationId' => $appId,
-                        'EndpointId'    => $endpointId,
-                        'EndpointRequest' => [
-                            'Address' => $email,
-                            'ChannelType' => 'EMAIL',
-                            'Attributes' => $attributes, // Optional custom attributes
-                            'User' => [
-                                'UserId' => $endpointId, // Use the endpoint ID as the user ID
-                                'UserAttributes' => [
-                                    'name' => [$attributes['name']],
-                                    'email' => [$attributes['email']],
+        try{
+            $endpoint = $this->pinpoint->updateEndpoint([
+                                'ApplicationId' => $appId,
+                                'EndpointId'    => $endpointId,
+                                'EndpointRequest' => [
+                                    'Address' => $email,
+                                    'ChannelType' => 'EMAIL',
+                                    // 'Attributes' => $attributes, // Optional custom attributes
+                                    'Attributes' => [], // Optional custom attributes
+                                    'User' => [
+                                        'UserId' => $endpointId, // Use the endpoint ID as the user ID
+                                        'UserAttributes' => [
+                                            'name' => [$attributes['name']],
+                                            'email' => [$attributes['email']],
+                                        ],
+                                    ],
                                 ],
-                            ],
-                        ],
-                    ]);
+                            ]);
+
+            Log::info('Pinpoint endpoint created.', $endpoint);
+
+            return $endpoint;
+        }
+        catch(\Exception $e) 
+        {
+            Log::error('Failed to create Pinpoint endpoint. Reason: '.$e->getMessage());
+        }
     }
 }
