@@ -28,8 +28,6 @@ class CreateAwsPinpointEventJob implements ShouldQueue
     public function handle(): void
     {
         $service = new PinpointService;
-        $product = $this->purchase->product->toArray();
-        $productJson = json_encode($product);
 
         $service
             ->createEvent(
@@ -37,7 +35,9 @@ class CreateAwsPinpointEventJob implements ShouldQueue
                 $this->purchase->user_id, 
                 'Purchase', 
                 [
-                    'Product' => $productJson
+                    'ProductID' => $this->purchase->product->id,
+                    'ProductName' => $this->purchase->product->name,
+                    'ProductPrice' => $this->purchase->product->price,
                 ]
             );
     }
