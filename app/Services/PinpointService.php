@@ -58,7 +58,7 @@ class PinpointService
                                 ],
                             ]);
 
-            Log::info('Pinpoint endpoint created.', $endpoint);
+            Log::info("Pinpoint endpoint created. UserId: {$endpointId}, Email: {$email}");
 
             return $endpoint;
         }
