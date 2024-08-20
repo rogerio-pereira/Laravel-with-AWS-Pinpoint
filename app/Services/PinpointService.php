@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 class PinpointService
 {
     protected $pinpoint;
+    protected $appId;
 
     /**
      * Create a new class instance.
@@ -22,6 +23,8 @@ class PinpointService
                 'secret' => config('services.pinpoint.secret'),
             ],
         ]);
+
+        $this->appId = config('services.pinpoint.app_id');
     }
 
     /**
@@ -37,11 +40,9 @@ class PinpointService
      */
     public function createEndpoint(int $endpointId, string $email, array $attributes = [])
     {
-        $appId = config('services.pinpoint.app_id');
-
         try{
             $endpoint = $this->pinpoint->updateEndpoint([
-                                'ApplicationId' => $appId,
+                                'ApplicationId' => $this->appId,
                                 'EndpointId'    => $endpointId,
                                 'EndpointRequest' => [
                                     'Address' => $email,
@@ -61,6 +62,49 @@ class PinpointService
             Log::info("Pinpoint endpoint created. UserId: {$endpointId}, Email: {$email}");
 
             return $endpoint;
+        }
+        catch(\Exception $e) 
+        {
+            Log::error('Failed to create Pinpoint endpoint. Reason: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Create Event in Pinpoint
+     *
+     * @param integer $eventId
+     * @param integer $endpointId
+     * @param string $eventType
+     * @param array $attributes
+     * @param array $metrics
+     * @return void
+     */
+    public function createEvent(int $eventId, int $endpointId, string $eventType, array $attributes = [], array $metrics = [])
+    {
+        try{
+            $response = $this->pinpoint->putEvents([
+                'ApplicationId' => $this->appId,
+                'EventsRequest' => [
+                    'BatchItem' => [
+                        $endpointId => [
+                            'Endpoint' => [],
+                            'Events' => [
+                                "event-{$eventId}" => [
+                                    'EventType' => $eventType,
+                                    'Timestamp' => now()->toIso8601String(),
+                                    'Attributes' => $attributes,
+                                    'Metrics' => $metrics,
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ]);
+
+            $attributesJson = json_encode($attributes);
+            Log::info("Pinpoint event created. Id: {$eventId}, endpointId: {$endpointId}, Event: {$eventType}, Attributes: {$attributesJson}");
+
+            return $response;
         }
         catch(\Exception $e) 
         {
