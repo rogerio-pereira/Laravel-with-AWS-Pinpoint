@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Aws\Pinpoint\PinpointClient;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PinpointService
 {
@@ -109,6 +110,27 @@ class PinpointService
         catch(\Exception $e) 
         {
             Log::error('Failed to create Pinpoint endpoint. Reason: '.$e->getMessage());
+        }
+    }
+
+    public function createMailTemplate(string $name, string $subject, string $html, string $text = null)
+    {
+        try{
+            $this->pinpoint->createEmailTemplate([
+                    'TemplateName' => Str::slug($name), //'string in kebab case' will be converted to 'string-in-kebab-case'
+                    'EmailTemplateRequest' => [
+                        'Subject' => $subject,
+                        'HtmlPart' => $html,
+                        'TextPart' => $text,
+                    ],
+                ]);
+
+            Log::info("Pinpoint mail template created. Name: {$name}. Subject: {$subject}");
+        }
+        catch(\Exception $e) 
+        {
+            Log::error('Failed to create Pinpoint mail template. Reason: '.$e->getMessage());
+            throw $e;
         }
     }
 }
